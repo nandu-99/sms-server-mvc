@@ -1,15 +1,19 @@
 # Backend API Documentation
 
-This document provides an overview of the available endpoints for the backend, allowing you to test the authentication, user profile, leave requests, contests, and event management features.
+This document provides an overview of the available endpoints for the backend, covering authentication, user profile, leave requests, and contest management.
 
 ## Base URL
 
 All requests are made to the base URL: 
 ```
-https://nst-ru-sms-server.vercel.app/
+https://sms-server-mvc.vercel.app/
 ```
 
-Here is the part with only `DATABASE_URL` and `JWT_SECRET`:
+---
+
+### Environment Variables
+
+Here's an example `.env` file with essential variables for configuration:
 
 ```bash
 # JWT Secret
@@ -17,21 +21,31 @@ JWT_SECRET=your_jwt_secret_key
 
 # Database URL
 DATABASE_URL=mysql://username:password@localhost:3306/your_db_name
+
+# Email
+EMAIL_USER = "abc@gmail.com"
+
+# Email App pass
+EMAIL_PASS = ""
 ```
+
+---
 
 ## Authentication Endpoints
 
 1. **Register a new user**
-   - **POST** `/signup`
-   - Request body should contain user details like `name`, `email`, `password` & `role`.
+   - **POST** `/auth/register`
+   - Request body should contain user details like `name`, `email`, `password`, `role`.
 
 2. **Log in and receive a JWT token**
-   - **POST** `/login`
-   - Request body should contain `email`, `password` & `role`. Returns a JWT token upon successful login.
+   - **POST** `/auth/login`
+   - Request body should contain `email` and `password` and `role`. Returns a JWT token upon successful login.
 
 3. **Log out the user by invalidating the token**
-   - **POST** `/logout`
+   - **POST** `/auth/logout`
    - Invalidates the current user's JWT token as Bearer Token.
+
+---
 
 ## User Profile Endpoints
 
@@ -41,81 +55,53 @@ DATABASE_URL=mysql://username:password@localhost:3306/your_db_name
 
 2. **Update user profile details**
    - **PUT** `/profile/update`
-   - Requires JWT token as Bearer Token for authentication and the body should include updated profile details.
+   - Requires JWT token as Bearer Token for authentication, with updated profile details in the body.
+
+---
 
 ## Leave Request Endpoints
 
 1. **Create a leave request**
-   - **POST** `/leave-request`
-   - Requires JWT token as Bearer Token and a leave request payload.
+   - **POST** `/leave`
+   - Requires JWT token as Bearer Token, with a leave request payload in the request body.
 
 2. **Fetch all leave requests for the logged-in user**
-   - **GET** `/leave-request`
+   - **GET** `/leave`
    - Requires JWT token as Bearer Token.
 
-3. **Update a leave request**
-   - **PUT** `/leave-request/:id`
-   - Requires JWT token as Bearer Token and the ID of the leave request to be updated.
+3. **Delete a leave request**
+   - **DELETE** `/leave/:leaveRequestId`
+   - Requires JWT token as Bearer Token, with the ID of the leave request to delete.
 
-4. **Delete a leave request**
-   - **DELETE** `/leave-requests/:leaveRequestId`
-   - Requires JWT token as Bearer Token and the ID of the leave request to delete.
-
-5. **Get a summary of recent leave requests**
-   - **GET** `/leave-requests/summary`
-   - Requires JWT token as Bearer Token. Fetches a summary of recent leave requests for the user.
+---
 
 ## Contests Endpoints
 
-1. **Create new contests**
-   - **POST** `/add-contests`
-   - Requires JWT token as Bearer Token and contest details in the request body.
+1. **Create a new contest**
+   - **POST** `/contests/create`
+   - Requires JWT token as Bearer Token, with contest details in the request body.
 
 2. **Fetch all contests**
    - **GET** `/contests`
    - Requires JWT token as Bearer Token.
 
-3. **Update a contest**
-   - **PUT** `/contests/:id`
-   - Requires JWT token as Bearer Token and the ID of the contest to update.
+3. **Fetch a specific contest by ID**
+   - **GET** `/contests/:contestId`
+   - Requires JWT token as Bearer Token and the contest ID.
 
-4. **Delete a contest**
-   - **DELETE** `/contests/:id`
-   - Requires JWT token as Bearer Token and the ID of the contest to delete.
+4. **Update a contest**
+   - **PUT** `/contests/:contestId`
+   - Requires JWT token as Bearer Token, with the contest ID and updated details in the request body.
 
-## Admin Endpoints
+5. **Delete a contest**
+   - **DELETE** `/contests/:contestId`
+   - Requires JWT token as Bearer Token, with the contest ID to delete.
 
-1. **Fetch all leave requests for students in the admin's school**
-   - **GET** `/admin/school-leaves`
-   - Requires JWT token as Bearer Token and admin privileges.
-
-2. **Approve or reject a leave request**
-   - **POST** `/leave-request/approve` or `/leave-request/reject`
-   - Requires JWT token as Bearer Token, admin privileges, and the ID of the leave request in the request body.
-
-## Events Endpoints
-
-1. **Create new events**
-   - **POST** `/events`
-   - Requires JWT token as Bearer Token and event details in the request body.
-
-2. **Fetch all events**
-   - **GET** `/events`
-   - Requires JWT token as Bearer Tokenv.
-
-3. **Update an event**
-   - **PUT** `/events/:id`
-   - Requires JWT token as Bearer Token and the ID of the event to update.
-
-4. **Delete an event**
-   - **DELETE** `/events/:id`
-   - Requires JWT token as Bearer Token and the ID of the event to delete.
-  
-## Documentation URL
-
-For more detailed information on request and response structures, as well as the database schema, please refer to the full documentation here: [API Documentation](https://docs.google.com/document/d/1az1EGjdQL8rrdOzPG_bccXfr5dVWlOWAk-dKvxzKPpc/edit?usp=sharing)
+---
 
 ## Authorization
 
-- Most endpoints require a valid JWT token as Bearer Token, which can be acquired through the `/login` endpoint.
-- Admin-specific routes require the user to have admin privileges.
+- All endpoints require a valid JWT token as Bearer Token, which can be acquired through the `/auth/login` endpoint.
+- Ensure to pass the token as a Bearer Token in the `Authorization` header for protected routes.
+
+---
